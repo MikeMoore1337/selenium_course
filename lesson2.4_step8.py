@@ -3,23 +3,28 @@ import math
 # Функция для рассчёта формулы на сайте
 def calc(x):
     return str(math.log(abs(12*math.sin(int(x)))))
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
 
 try:
-    link = 'http://suninjuly.github.io/redirect_accept.html'
+    link = 'http://suninjuly.github.io/explicit_wait2.html'
     browser = webdriver.Chrome()
     browser.get(link)
 
-    # Нажимаем на кнопку
-    button = browser.find_element_by_css_selector('[type="submit"]')
+    # Дожидаемся, когда цена дома уменьшится до $100
+    price = WebDriverWait(browser, 12).until(
+        EC.text_to_be_present_in_element((By.ID, "price"), "100")
+    )
+
+    # Говорим Selenium проверять в течение 12 секунд и как только цена станет $100, кликаем Book
+    button = WebDriverWait(browser, 12).until(
+        EC.element_to_be_clickable((By.ID, "book"))
+    )
     button.click()
 
-    # Переключаемся на новую вкладку
-    first_window = browser.window_handles[0]
-    new_window = browser.window_handles[1]
-    browser.switch_to.window(new_window)
-
-    # Решаем капчу
+    # Решаем уравнение
     x_el = browser.find_element_by_css_selector('span#input_value')
     x = x_el.text
     y = calc(x)
@@ -29,7 +34,7 @@ try:
     input1.send_keys(y)
 
     # Кликаем Submit
-    button = browser.find_element_by_css_selector('[type="submit"]')
+    button = browser.find_element_by_css_selector('button#solve')
     button.click()
 
 except Exception as error:
@@ -37,7 +42,7 @@ except Exception as error:
 
 finally:
     # ожидание чтобы визуально оценить результаты прохождения скрипта
-    time.sleep(5)
+    time.sleep(15)
     # закрываем браузер после всех манипуляций
     browser.quit()
 #
