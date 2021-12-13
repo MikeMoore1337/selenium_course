@@ -17,6 +17,7 @@ try:
     treasure_value = treasure.get_attribute('valuex')
     x = treasure_value
     y = calc(x)
+    print(x)
 
     # Рассчитываем и указываем значение "y"
     input1 = browser.find_element_by_css_selector('input[type="text"]')
